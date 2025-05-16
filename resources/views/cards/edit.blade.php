@@ -11,7 +11,7 @@
         </div>
         <div class="mb-3">
             <label class="form-label">Expansión</label>
-            <input type="text" name="expansion_id" class="form-control" value="{{ $card->expansion_id }}" required>
+            <input type="number" name="expansion_id" class="form-control" value="{{ $card->expansion_id }}" required>
         </div>
         <div class="mb-3">
             <label class="form-label">Imagen (URL)</label>

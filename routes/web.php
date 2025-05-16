@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Route;
 
 //directorio raiz
 Route::get('/', function () {
-    return view('/login');
+    return view('/auth/login');
 });
 //ver las cartas
 Route::get('/cards', [CardController::class, 'index'])->name('cards.index');
@@ -16,7 +16,9 @@ Route::get('/cards/owned', [CardController::class, 'owned'])->name('cards.owned'
 Route::get('/cards/missing', [CardController::class, 'missing'])->name('cards.missing');
 Route::delete('/cards/unmark-owned/{cardId}', [CardController::class, 'unmarkOwned'])->middleware('auth');
 
-
+Route::get('/sobre-mi', function () {
+    return view('sobre-mi');
+})->name('sobre-mi');
 
 
 // Para añadir cartas promo a la base de datos (solo admin)

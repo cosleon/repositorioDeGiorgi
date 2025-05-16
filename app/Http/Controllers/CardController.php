@@ -18,13 +18,14 @@ class CardController extends Controller
         return view('cards.index', compact('expansions'));
     }
 
-    public function search(Request $request)
+     public function search(Request $request)
 {
     $userId = auth()->id();
 
     $expansionId = $request->query('expansion_id');
     $pokemonName = $request->query('name');
     $filter = $request->query('filter');
+    $perPage = $request->query('per_page', 16);
 
     $query = Card::with('expansion');
 
@@ -36,10 +37,8 @@ class CardController extends Controller
         $query->where('name', 'like', '%' . $pokemonName . '%');
     }
 
-    // Aplicar filtro solo si el usuario está autenticado y el filtro es válido
     if (Auth::check() && in_array($filter, ['owned', 'missing'])) {
         $user = Auth::user();
-
         if ($filter === 'owned') {
             $query->whereHas('users', function ($q) use ($user) {
                 $q->where('user_id', $user->id);
@@ -51,26 +50,26 @@ class CardController extends Controller
         }
     }
 
-    $cards = $query->get();
+    $cardsPaginator = $query->paginate($perPage);
 
-    // ✅ Añadir campos 'owned' y 'can_mark' a cada carta para el frontend
+    $cardsPaginator->appends($request->query());
+
+    $userCardIds = [];
     if ($userId) {
-        // Obtener IDs de cartas que tiene el usuario
-        $userCardIds = \DB::table('user_cards')
+        $userCardIds = DB::table('user_cards')
             ->where('user_id', $userId)
             ->pluck('card_id')
             ->toArray();
-    } else {
-        $userCardIds = [];
     }
 
-    $cards->each(function ($card) use ($userCardIds, $userId) {
+    $cardsPaginator->getCollection()->each(function ($card) use ($userCardIds, $userId) {
         $card->owned = $userId ? in_array($card->id, $userCardIds) : false;
         $card->can_mark = $userId !== null;
     });
 
-    return response()->json($cards);
+    return response()->json($cardsPaginator);
 }
+
 
 
 
@@ -128,12 +127,9 @@ public function missing(Request $request)
 
 
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function ListarPromos()
     {
-        $cards = Card::where('rarity', 'Promo')->get();
+        $cards = Card::where('rarity', 'Promo')->paginate(12);
         return view('cards.listarPromos', compact('cards'));
     }
 
