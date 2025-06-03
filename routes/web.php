@@ -32,7 +32,7 @@ Route::middleware(['auth', 'isAdmin'])->group(function () {
 });
 
 
-//cosas del breeze ni puta idea
+//cosas del breeze 
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');

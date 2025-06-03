@@ -21,12 +21,10 @@ class CardController extends Controller
      public function search(Request $request)
 {
     $userId = auth()->id();
-
     $expansionId = $request->query('expansion_id');
     $pokemonName = $request->query('name');
     $filter = $request->query('filter');
     $perPage = $request->query('per_page', 16);
-
     $query = Card::with('expansion');
 
     if ($expansionId) {
@@ -49,9 +47,7 @@ class CardController extends Controller
             });
         }
     }
-
     $cardsPaginator = $query->paginate($perPage);
-
     $cardsPaginator->appends($request->query());
 
     $userCardIds = [];
@@ -61,12 +57,10 @@ class CardController extends Controller
             ->pluck('card_id')
             ->toArray();
     }
-
     $cardsPaginator->getCollection()->each(function ($card) use ($userCardIds, $userId) {
         $card->owned = $userId ? in_array($card->id, $userCardIds) : false;
         $card->can_mark = $userId !== null;
     });
-
     return response()->json($cardsPaginator);
 }
 
@@ -84,7 +78,6 @@ public function markOwned($cardId)
 
     return response()->json(['success' => true]);
 }
-
 public function unmarkOwned($cardId)
 {
     $userId = auth()->id();
@@ -96,7 +89,6 @@ public function unmarkOwned($cardId)
 
     return response()->json(['success' => true]);
 }
-
 
 public function owned(Request $request)
 {
@@ -132,16 +124,12 @@ public function missing(Request $request)
         $cards = Card::where('rarity', 'Promo')->paginate(12);
         return view('cards.listarPromos', compact('cards'));
     }
-
-
     public function create()
     {
         return view('cards.create');
     }
-
     public function store(Request $request)
     {
-
         $request->validate([
             'name' => 'required',
             'expansion_id' => 'required',
@@ -154,15 +142,12 @@ public function missing(Request $request)
             'image_url' => $request->image_url,
             'rarity' => 'Promo', // Siempre será "Promo"
         ]);
-
         return redirect()->route('cards.listarPromos')->with('success', 'Carta añadida exitosamente');
     }
-
     public function edit(Card $card)
     {
         return view('cards.edit', compact('card'));
     }
-
     public function update(Request $request, Card $card)
     {
         $request->validate([
@@ -176,7 +161,6 @@ public function missing(Request $request)
 
         return redirect()->route('cards.listarPromos')->with('success', 'Carta actualizada');
     }
-
     public function destroy(Card $card)
     {
         $card->delete();

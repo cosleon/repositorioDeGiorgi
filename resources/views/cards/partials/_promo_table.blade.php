@@ -6,8 +6,7 @@
             <th class="border border-slate-300 p-2 bg-slate-100 text-left">Acciones</th>
         </tr>
     </thead>
-    <tbody>
-        @foreach ($cards as $card)
+    <tbody>@foreach ($cards as $card)
             <tr>
                 <td class="border border-slate-300 p-2">{{ $card->name }}</td>
                 <td class="border border-slate-300 p-2">
@@ -28,11 +27,9 @@
                         </form>
                     </div>
                 </td>
-            </tr>
-        @endforeach
+            </tr>@endforeach
     </tbody>
 </table>
-
 <div class="mt-4">
     {{ $cards->links() }}
 </div>
